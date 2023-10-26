@@ -52,10 +52,10 @@ async function handleRequest(request) {
 //     };
 //   }
 
-//   for (let [key, value] of newBody) {
-//     headersStr += `${key}: ${value}\n`;
-//   }
-//   sendLogToLogflare(headersStr);
+  for (let [key, value] of newBody) {
+    headersStr += `${key}: ${value}\n`;
+  }
+  sendLogToLogflare(headersStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,

@@ -75,7 +75,8 @@ async function handleRequest(request) {
 //     };
 //   }
 
-  bodyStr = traverseJSON(newBody);
+  // bodyStr = traverseJSON(newBody);
+  bodyStr = JSON.stringify(newBody)
   sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {

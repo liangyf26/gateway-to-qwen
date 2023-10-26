@@ -42,7 +42,7 @@ async function handleRequest(request) {
   // 日志输出
   sendLogToLogflare('url: ' + newURL);
 
-  let newBody = request.body;
+//   let newBody = request.body;
 //   if (!("input" in newBody)) {
 //     newBody = {
 //         model: newBody.model,
@@ -52,15 +52,15 @@ async function handleRequest(request) {
 //     };
 //   }
 
-  for (let [key, value] of newBody) {
-    headersStr += `${key}: ${value}\n`;
-  }
-  sendLogToLogflare(headersStr);
+//   for (let [key, value] of newBody) {
+//     headersStr += `${key}: ${value}\n`;
+//   }
+//   sendLogToLogflare(headersStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,
     method: request.method,
-    body: newBody,
+    body: request.body,
     redirect: 'follow'
   });
   const response = await fetch(modifiedRequest);

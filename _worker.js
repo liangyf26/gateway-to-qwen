@@ -37,20 +37,20 @@ async function handleRequest(request) {
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
   const newHeaders = new Headers(request.headers);
-  // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
+  newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
   // 日志输出
   sendLogToLogflare('url: ' + newURL);
 
   let newBody = request.body;
-  if (!("input" in newBody)) {
-    newBody = {
-        model: newBody.model,
-        input: {
-            messages: newBody.messages
-        }
-    };
-  }
+//   if (!("input" in newBody)) {
+//     newBody = {
+//         model: newBody.model,
+//         input: {
+//             messages: newBody.messages
+//         }
+//     };
+//   }
 
   for (let [key, value] of newBody) {
     headersStr += `${key}: ${value}\n`;

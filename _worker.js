@@ -11,19 +11,27 @@ export default {
   },
 };
 
-function traverseJSON(obj, parentKey = '') {
-    let tempStr = ''; 
+
+function traverse(obj, parentKey = '') {
+  let resultStr = '';
   
-    for (let key in obj) {
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        tempStr += traverseJSON(obj[key], parentKey + key + '.');
+  for (let key in obj) {
+    if (obj[key] && typeof obj[key] === 'object') {
+      if (Array.isArray(obj[key])) {
+        for (let i = 0; i < obj[key].length; i++) {
+          resultStr += traverse(obj[key][i], `${parentKey}${key}[${i}].`);
+        }
       } else {
-        tempStr += `${parentKey}${key}: ${obj[key]}\n`;
+        resultStr += traverse(obj[key], `${parentKey}${key}.`);
       }
+    } else {
+      resultStr += `${parentKey}${key}: ${obj[key]}\n`;
     }
-  
-    return tempStr;
+  }
+
+  return resultStr;
 }
+
 
 async function sendLogToLogflare(logData) {
     const url = new URL('https://api.logflare.app/logs');

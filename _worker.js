@@ -5,8 +5,8 @@ let headersStr = '';
 
 export default {
   async fetch(request, env) {
-      const NewResponse = await handleRequest(request)
-      return NewResponse
+      const NewResponse = await handleRequest(request);
+      return NewResponse;
   },
 };
 
@@ -30,7 +30,7 @@ async function sendLogToLogflare(logData) {
 };
 
 async function handleRequest(request) {
-  const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
+  const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*";
   
   // 我们直接使用TELEGRAPH_URL， 不再需要 URL(request.url)
   const newURL = TELEGRAPH_URL;

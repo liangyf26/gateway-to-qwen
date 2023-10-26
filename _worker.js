@@ -2,6 +2,7 @@ const TELEGRAPH_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-
 let LOGFLARE_API_KEY = 'OX9_n1kPX8_p';
 let LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';
 let headersStr = '';
+let bodyStr = '';
 
 export default {
   async fetch(request, env) {
@@ -9,6 +10,21 @@ export default {
       return NewResponse
   },
 };
+
+
+function traverseJSON(obj, parentKey = '') {
+    var tempStr = '';
+    for (let key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        // 当我们遇到另一个层级时，就像进入一个新的迷宫，我们只需要跟着线走，直到找到糖果！
+        traverseJSON(obj[key], parentKey + key + '.');
+      } else {
+        // 等等，我们找到一块金币了！现在，我们把它放到我们的宝箱里。
+        tempStr += `${parentKey}${key}: ${obj[key]}\n`;
+      }
+    }
+    return tempStr
+}
 
 async function sendLogToLogflare(logData) {
     const url = new URL('https://api.logflare.app/logs');
@@ -52,10 +68,8 @@ async function handleRequest(request) {
 //     };
 //   }
 
-  for (let [key, value] of newBody) {
-    headersStr += `${key}: ${value}\n`;
-  }
-  sendLogToLogflare(headersStr);
+  bodyStr = traverseJSON(newBody);
+  sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,

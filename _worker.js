@@ -11,19 +11,6 @@ export default {
   },
 };
 
-
-function traverseJSON(obj, parentKey = '') {
-    // var tempStr = '';
-    for (let key in obj) {
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        traverseJSON(obj[key], parentKey + key + '.');
-      } else {
-        bodyStr += `${parentKey}${key}: ${obj[key]}\n`;
-      }
-    }
-    // return tempStr
-}
-
 function traverseJSON(obj, parentKey = '') {
     let tempStr = ''; 
   

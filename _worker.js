@@ -22,7 +22,7 @@ async function sendLogToLogflare(logData) {
       },
       body: JSON.stringify({
         metadata: {'gateway': 'cloudflare', 'app': 'qwen'},
-        message: logData,
+        message: logData
       }),
     };
   
@@ -39,11 +39,11 @@ async function handleRequest(request) {
   const newHeaders = new Headers(request.headers);
   newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
-  headersStr = 'a u ok?';
+//   headersStr = 'a u ok?';
 //   for (let [key, value] of newHeaders) {
 //     headersStr += `${key}: ${value}\n`;
 //   }
-  sendLogToLogflare(headersStr);
+//   sendLogToLogflare(headersStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,

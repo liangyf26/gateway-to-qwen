@@ -37,12 +37,12 @@ async function handleRequest(request) {
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
   const newHeaders = new Headers(request.headers);
-  newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
+//   newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
   // 日志输出
   sendLogToLogflare('url: ' + newURL);
 
-//   let newBody = request.body;
+  let newBody = request.body;
 //   if (!("input" in newBody)) {
 //     newBody = {
 //         model: newBody.model,
@@ -60,7 +60,7 @@ async function handleRequest(request) {
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,
     method: request.method,
-    body: request.body,
+    body: newBody,
     redirect: 'follow'
   });
   const response = await fetch(modifiedRequest);

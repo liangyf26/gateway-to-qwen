@@ -39,6 +39,8 @@ async function handleRequest(request) {
   const newHeaders = new Headers(request.headers);
   newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
+  sendLogToLogflare('new: ' + newURL);
+
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,
     method: request.method,

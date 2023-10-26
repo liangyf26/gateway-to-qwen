@@ -1,10 +1,32 @@
-const TELEGRAPH_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation';
+let LOGFLARE_API_KEY = 'OX9_n1kPX8_p';
+let LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';
+let headersStr = '';
+
 
 export default {
   async fetch(request, env) {
       const NewResponse = await handleRequest(request)
       return NewResponse
   },
+};
+
+async function sendLogToLogflare(logData) {
+    const url = new URL('https://api.logflare.app/logs');
+    url.searchParams.append('source', LOGFLARE_SOURCE_ID);
+
+    let init = {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': LOGFLARE_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        metadata: {'gateway': 'cloudflare', 'app': 'qwen'},
+        message: logData,
+      }),
+    };
+  
+    await fetch(url, init);
 };
 
 async function handleRequest(request) {
@@ -16,6 +38,11 @@ async function handleRequest(request) {
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
   const newHeaders = new Headers(request.headers);
   newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
+
+  for (let [key, value] of newHeaders) {
+    headersStr += `${key}: ${value}\n`;
+  }
+  sendLogToLogflare(headersStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,

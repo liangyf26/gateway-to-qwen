@@ -4,6 +4,18 @@ let LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';
 let headersStr = '';
 let bodyStr = '';
 
+let jsonObj = {
+  "model": "qwen-plus",
+  "input": {
+      "messages": [
+          {
+              "role": "user",
+              "content": "你是谁？？？"
+          }
+      ]
+  }
+};
+
 export default {
   async fetch(request, env) {
       const NewResponse = await handleRequest(request)
@@ -76,7 +88,7 @@ async function handleRequest(request) {
 //   }
 
   // bodyStr = traverseJSON(newBody);
-  bodyStr = JSON.stringify(newBody)
+  bodyStr = JSON.stringify(jsonObj)
   sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {

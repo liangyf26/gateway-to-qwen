@@ -13,17 +13,29 @@ export default {
 
 
 function traverseJSON(obj, parentKey = '') {
-    var tempStr = '';
+    // var tempStr = '';
     for (let key in obj) {
       if (typeof obj[key] === 'object' && obj[key] !== null) {
-        // 当我们遇到另一个层级时，就像进入一个新的迷宫，我们只需要跟着线走，直到找到糖果！
         traverseJSON(obj[key], parentKey + key + '.');
       } else {
-        // 等等，我们找到一块金币了！现在，我们把它放到我们的宝箱里。
+        bodyStr += `${parentKey}${key}: ${obj[key]}\n`;
+      }
+    }
+    // return tempStr
+}
+
+function traverseJSON(obj, parentKey = '') {
+    let tempStr = ''; 
+  
+    for (let key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        tempStr += traverseJSON(obj[key], parentKey + key + '.');
+      } else {
         tempStr += `${parentKey}${key}: ${obj[key]}\n`;
       }
     }
-    return tempStr
+  
+    return tempStr;
 }
 
 async function sendLogToLogflare(logData) {

@@ -21,7 +21,7 @@ async function sendLogToLogflare(logData) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      metadata: {'gateway': 'cloudflare', 'app': 'qwen'},
+      metadata: {'gateway': 'cloudflare', 'app': 'aliyun'},
       event_message: logData
     }),
   };
@@ -47,18 +47,20 @@ async function handleErrors(event) {
 
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
-  
+
+  console.log(`客户端IP: ${clientIP}`); // 珍珠，亮相吧！
   // 我们直接使用TELEGRAPH_URL， 不再需要 URL(request.url)
   const newURL = TELEGRAPH_URL;
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
   // const newHeaders = await new Headers(request.headers);
 
+  const clientIP = request.headers.get('CF-Connecting-IP') || "Oops, 没有找到客户端IP！";
+  await sendLogToLogflare(`客户地址: ${clientIP}`);
   const headers_Auth = request.headers.get("Authorization") || "Ops,没有找到授权信息!"
   await sendLogToLogflare(`授权信息: ${headers_Auth}`);
-
   const bodyStr = await request.text();
-  await sendLogToLogflare(bodyStr);
+  await sendLogToLogflare(`请求内容: ${bodyStr}`);
   
   let newBody = JSON.parse(bodyStr);
   if (!("input" in newBody)) {

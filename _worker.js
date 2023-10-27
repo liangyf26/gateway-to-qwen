@@ -53,7 +53,8 @@ async function handleRequest(request) {
   // const newHeaders = await new Headers(request.headers);
 
   const clientIP = request.headers.get('CF-Connecting-IP') || "Oops, 没有找到客户端IP！";
-  await sendLogToLogflare(`客户地址: ${clientIP}`);
+  const IPCountry = request.headers.get('CF-IPCountry') || "Oops, 没有找到客户端国家！";
+  await sendLogToLogflare(`客户地址: ${clientIP} (${IPCountry})`);
   const headers_Auth = request.headers.get("Authorization") || "Ops,没有找到授权信息!"
   await sendLogToLogflare(`授权信息: ${headers_Auth}`);
   const bodyStr = await request.text();

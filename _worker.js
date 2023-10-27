@@ -41,7 +41,7 @@ async function handleErrors(event) {
   } catch (error) {
     // 在这里你可以发送错误信息到一些日志服务
     // 或者发送到你的邮箱，或者使用你喜欢的错误追踪工具
-    console.error('Caught an error:', error)
+    sendLogToLogflare('Caught an error:', error)
   }
 }
 

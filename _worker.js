@@ -9,6 +9,21 @@ export default {
   },
 };
 
+addEventListener('fetch', event => {
+  try {
+    event.respondWith(handleRequest(event.request))
+  } catch (e) {
+    if (DEBUG) {
+      return event.respondWith(
+        new Response(e.message || e.toString(), {
+          status: 500,
+        }),
+      )
+    }
+    event.respondWith(new Response('亲爱的用户，内部服务器错误', { status: 500 }))
+  }
+})
+
 async function sendLogToLogflare(logData) {
   const url = new URL('https://api.logflare.app/logs');
   url.searchParams.append('source', LOGFLARE_SOURCE_ID);
@@ -32,7 +47,9 @@ async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
   const newURL = TELEGRAPH_URL;
 
-  sendLogToLogflare(request.body)
+  // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
+  const body = await request.json();
+  await sendLogToLogflare(body);
 
   const modifiedRequest = new Request(newURL, {
     headers: request.headers,

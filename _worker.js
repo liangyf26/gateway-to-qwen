@@ -56,8 +56,8 @@ async function handleRequest(request) {
   // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
 
-  // const bodyStr = await request.text();
-  let newBody = await request.body;
+  const bodyStr = await request.text();
+  let newBody = JSON.parse(bodyStr);
   //   if (!("input" in newBody)) {
   //     newBody = {
   //         model: newBody.model,
@@ -66,13 +66,13 @@ async function handleRequest(request) {
   //         }
   //     };
   //   }
-  let bodyStr = JSON.stringify(newBody)
-  await sendLogToLogflare(bodyStr);
+  let newbodyStr = JSON.stringify(newBody)
+  await sendLogToLogflare(newbodyStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: request.headers,
     method: request.method,
-    body: bodyStr,
+    body: newbodyStr,
     redirect: 'follow'
   });
   const response = await fetch(modifiedRequest);

@@ -24,17 +24,17 @@ export default {
 };
 
 
-function traverse(obj, parentKey = '') {
+function traverseJSON(obj, parentKey = '') {
   let resultStr = '';
   
   for (let key in obj) {
     if (obj[key] && typeof obj[key] === 'object') {
       if (Array.isArray(obj[key])) {
         for (let i = 0; i < obj[key].length; i++) {
-          resultStr += traverse(obj[key][i], `${parentKey}${key}[${i}].`);
+          resultStr += traverseJSON(obj[key][i], `${parentKey}${key}[${i}].`);
         }
       } else {
-        resultStr += traverse(obj[key], `${parentKey}${key}.`);
+        resultStr += traverseJSON(obj[key], `${parentKey}${key}.`);
       }
     } else {
       resultStr += `${parentKey}${key}: ${obj[key]}\n`;
@@ -87,8 +87,8 @@ async function handleRequest(request) {
 //     };
 //   }
 
-  // bodyStr = traverseJSON(newBody);
-  bodyStr = JSON.stringify(jsonObj)
+  bodyStr = traverseJSON(newBody);
+  // bodyStr = JSON.stringify(jsonObj)
   sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {

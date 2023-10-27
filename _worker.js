@@ -47,9 +47,6 @@ async function handleErrors(event) {
 
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
-
-  console.log(`客户端IP: ${clientIP}`); // 珍珠，亮相吧！
-  // 我们直接使用TELEGRAPH_URL， 不再需要 URL(request.url)
   const newURL = TELEGRAPH_URL;
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization

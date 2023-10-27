@@ -66,7 +66,7 @@ async function handleRequest(request) {
   //         }
   //     };
   //   }
-  let bodyStr = newBody.stringify()
+  let bodyStr = JSON.stringify(newBody)
   await sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {

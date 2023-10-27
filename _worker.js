@@ -55,7 +55,18 @@ async function handleRequest(request) {
   // const newHeaders = new Headers(request.headers);
   // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
-  const bodyStr = await request.text();
+
+  // const bodyStr = await request.text();
+  let newBody = await request.body;
+  //   if (!("input" in newBody)) {
+  //     newBody = {
+  //         model: newBody.model,
+  //         input: {
+  //             messages: newBody.messages
+  //         }
+  //     };
+  //   }
+  let bodyStr = newBody.stringify()
   await sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {

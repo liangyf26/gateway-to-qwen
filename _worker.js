@@ -1,4 +1,4 @@
-app.use(express.json());
+// app.use(express.json());
 const TELEGRAPH_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation';
 let LOGFLARE_API_KEY = 'OX9_n1kPX8_p';
 let LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';

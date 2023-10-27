@@ -78,18 +78,22 @@ async function handleRequest(request) {
   sendLogToLogflare('url: ' + newURL);
 
   let newBody = request.body;
-//   if (!("input" in newBody)) {
-//     newBody = {
-//         model: newBody.model,
-//         input: {
-//             messages: newBody.messages
-//         }
-//     };
-//   }
+  //   if (!("input" in newBody)) {
+  //     newBody = {
+  //         model: newBody.model,
+  //         input: {
+  //             messages: newBody.messages
+  //         }
+  //     };
+  //   }
 
   bodyStr = traverseJSON(jsonObj);
-  // bodyStr = JSON.stringify(jsonObj)
   sendLogToLogflare(bodyStr);
+  bodyStr = JSON.stringify(jsonObj)
+  sendLogToLogflare(bodyStr);  
+  bodyStr = traverseJSON(request.body);
+  sendLogToLogflare(bodyStr);
+
 
   const modifiedRequest = new Request(newURL, {
     headers: newHeaders,

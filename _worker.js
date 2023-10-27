@@ -87,7 +87,7 @@ async function handleRequest(request) {
 //     };
 //   }
 
-  bodyStr = traverseJSON(newBody);
+  bodyStr = traverseJSON(jsonObj);
   // bodyStr = JSON.stringify(jsonObj)
   sendLogToLogflare(bodyStr);
 

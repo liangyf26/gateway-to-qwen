@@ -58,14 +58,14 @@ async function handleRequest(request) {
 
   const bodyStr = await request.text();
   let newBody = JSON.parse(bodyStr);
-  //   if (!("input" in newBody)) {
-  //     newBody = {
-  //         model: newBody.model,
-  //         input: {
-  //             messages: newBody.messages
-  //         }
-  //     };
-  //   }
+  if (!("input" in newBody)) {
+    newBody = {
+      model: newBody.model,
+      input: {
+        messages: newBody.messages
+      }
+    };
+  }
   let newbodyStr = JSON.stringify(newBody)
   await sendLogToLogflare(newbodyStr);
 

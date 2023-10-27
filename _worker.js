@@ -55,8 +55,8 @@ async function handleRequest(request) {
   // const newHeaders = new Headers(request.headers);
   // newHeaders.set('Authorization', 'Bearer sk-ad7cf22cf6b146099f59735c85ec7d33'); 
 
-  // const body = await request.text();
-  // await sendLogToLogflare(body);
+  const bodyStr = await request.text();
+  await sendLogToLogflare(bodyStr);
 
   const modifiedRequest = new Request(newURL, {
     headers: request.headers,

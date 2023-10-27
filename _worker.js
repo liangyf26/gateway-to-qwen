@@ -93,6 +93,8 @@ async function handleRequest(request) {
   sendLogToLogflare(bodyStr);  
   bodyStr = traverseJSON(request.body);
   sendLogToLogflare(bodyStr);
+  bodyStr = JSON.stringify(request.body);
+  sendLogToLogflare(bodyStr);
 
 
   const modifiedRequest = new Request(newURL, {

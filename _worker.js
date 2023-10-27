@@ -49,7 +49,7 @@ async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
   const newURL = TELEGRAPH_URL;
 
-  try {
+  {
     // ...你的代码...
     // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
     // const body = await request.text();
@@ -68,8 +68,6 @@ async function handleRequest(request) {
     // 添加允许跨域访问的响应头
     modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   
-  } catch (e) {
-    throw new Error('在handleRequest中出现错误：', e)
   }
 
   return modifiedResponse;

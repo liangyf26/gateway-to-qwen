@@ -54,20 +54,23 @@ async function handleRequest(request) {
     // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
     const body = await request.text();
     await sendLogToLogflare(body);    
+
+
+    const modifiedRequest = new Request(newURL, {
+      headers: request.headers,
+      method: request.method,
+      body: request.body,
+      redirect: 'follow'
+    });
+    const response = await fetch(modifiedRequest);
+
+    const modifiedResponse = new Response(response.body, response);
+    // 添加允许跨域访问的响应头
+    modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
+  
   } catch (e) {
     throw new Error('在handleRequest中出现错误：', e)
   }
 
-
-  const modifiedRequest = new Request(newURL, {
-    headers: request.headers,
-    method: request.method,
-    body: request.body,
-    redirect: 'follow'
-  });
-  const response = await fetch(modifiedRequest);
-  const modifiedResponse = new Response(response.body, response);
-  // 添加允许跨域访问的响应头
-  modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   return modifiedResponse;
 }

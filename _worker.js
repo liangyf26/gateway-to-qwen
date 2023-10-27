@@ -29,13 +29,35 @@ async function sendLogToLogflare(logData) {
   await fetch(url, init);
 };
 
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+  event.waitUntil(handleErrors(event))
+})
+
+
+async function handleErrors(event) {
+  try {
+    await event.passThroughOnException()
+  } catch (error) {
+    // 在这里你可以发送错误信息到一些日志服务
+    // 或者发送到你的邮箱，或者使用你喜欢的错误追踪工具
+    console.error('Caught an error:', error)
+  }
+}
+
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
   const newURL = TELEGRAPH_URL;
 
-  // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
-  const body = await request.text();
-  await sendLogToLogflare(body);
+  try {
+    // ...你的代码...
+    // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
+    const body = await request.text();
+    await sendLogToLogflare(body);    
+  } catch (e) {
+    throw new Error('在handleRequest中出现错误：', e)
+  }
+
 
   const modifiedRequest = new Request(newURL, {
     headers: request.headers,

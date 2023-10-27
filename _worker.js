@@ -48,7 +48,7 @@ async function handleRequest(request) {
   const newURL = TELEGRAPH_URL;
 
   // 等待获取请求体，并将其作为参数传递给sendLogToLogflare
-  const body = await request.json();
+  const body = await request.text();
   await sendLogToLogflare(body);
 
   const modifiedRequest = new Request(newURL, {

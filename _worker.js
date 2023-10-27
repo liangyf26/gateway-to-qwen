@@ -9,20 +9,6 @@ export default {
   },
 };
 
-// addEventListener('fetch', event => {
-//   try {
-//     event.respondWith(handleRequest(event.request))
-//   } catch (e) {
-//     if (DEBUG) {
-//       return event.respondWith(
-//         new Response(e.message || e.toString(), {
-//           status: 500,
-//         }),
-//       )
-//     }
-//     event.respondWith(new Response('亲爱的用户，内部服务器错误', { status: 500 }))
-//   }
-// })
 
 async function sendLogToLogflare(logData) {
   const url = new URL('https://api.logflare.app/logs');
@@ -36,7 +22,7 @@ async function sendLogToLogflare(logData) {
     },
     body: JSON.stringify({
       metadata: {'gateway': 'cloudflare', 'app': 'qwen'},
-      event_message: logData,
+      event_message: logData
     }),
   };
 

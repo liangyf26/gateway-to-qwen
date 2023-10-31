@@ -78,8 +78,43 @@ async function handleRequest(request) {
     body: newbodyStr,
     redirect: 'follow'
   });
+
   const response = await fetch(modifiedRequest);
-  const modifiedResponse = new Response(response.body, response);
+  // 把body转换为JSON格式
+  const responseBody = await response.json();
+  // 添加"choices"字段
+  if (!("choices" in responseBody)) {
+    responseBody = {
+      "id": newResposeBody.request_id,
+      "object": "chat.completion",
+      "model": newBody.model,
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": newResposeBody.output.text
+          },
+          "finish_reason": newResposeBody.output.finish_reason
+        }
+      ],
+      "usage": {
+        "prompt_tokens": newResposeBody.usage.input_tokens,
+        "completion_tokens": newResposeBody.usage.output_tokens,
+        "total_tokens": newResposeBody.usage.total_tokens
+      }
+
+    }
+  };
+
+  // 创建新的Response，用JSON.stringify()将新的body转换为字符串
+  const modifiedResponse = new Response(JSON.stringify(responseBody), {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+  
+  // const modifiedResponse = new Response(response.body, response);
   // 添加允许跨域访问的响应头
   modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   return modifiedResponse;

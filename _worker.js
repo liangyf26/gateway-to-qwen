@@ -80,9 +80,9 @@ async function handleRequest(request) {
     redirect: 'follow'
   });
   const response = await fetch(modifiedRequest);
-  let newResposeBody = response.body
+  let newResposeBody = response.body;
 
-  wait sendLogToLogflare(`返回内容: ${newResposeBody}`);
+  await sendLogToLogflare(`返回内容: ${newResposeBody}`);
   if (!("choices" in newResposeBody)) {
     newResposeBody = {
         "id": newResposeBody.request_id,
@@ -105,7 +105,7 @@ async function handleRequest(request) {
         }
     };
   }
-  wait sendLogToLogflare(`修改内容: ${newResposeBody}`);
+  await sendLogToLogflare(`修改内容: ${newResposeBody}`);
   const modifiedResponse = new Response(newResposeBody, response);
   // 添加允许跨域访问的响应头
   modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);

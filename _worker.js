@@ -45,6 +45,7 @@ async function handleErrors(event) {
   }
 }
 
+
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
   const newURL = TELEGRAPH_URL;

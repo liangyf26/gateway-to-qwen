@@ -80,7 +80,30 @@ async function handleRequest(request) {
     redirect: 'follow'
   });
   const response = await fetch(modifiedRequest);
-  const modifiedResponse = new Response(response.body, response);
+  let newResposeBody = response.body
+  if (!("choices" in newResposeBody)) {
+    newResposeBody = {
+        "id": newResposeBody.request_id,
+        "object": "chat.completion",
+        "model": newBody.model,
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": newResposeBody.output.text
+                },
+                "finish_reason": newResposeBody.output.finish_reason
+            }
+        ],
+        "usage": {
+            "prompt_tokens": newResposeBody.usage.input_tokens,
+            "completion_tokens": newResposeBody.usage.output_tokens,
+            "total_tokens": newResposeBody.usage.total_tokens
+        }
+    };
+  }
+  const modifiedResponse = new Response(newResposeBody, response);
   // 添加允许跨域访问的响应头
   modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   return modifiedResponse;

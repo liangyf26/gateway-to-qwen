@@ -81,7 +81,7 @@ async function handleRequest(request) {
 
   const response = await fetch(modifiedRequest);
   // 把body转换为JSON格式
-  const responseBody = await response.json();
+  let responseBody = await response.json();
   await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
   // 添加"choices"字段
   if (!("choices" in responseBody)) {

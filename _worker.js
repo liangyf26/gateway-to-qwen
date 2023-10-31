@@ -86,7 +86,7 @@ async function handleRequest(request) {
   // 添加"choices"字段
   if (!("choices" in responseBody)) {
     responseBody = {
-      "id": newResposeBody.request_id,
+      "id": responseBody.request_id,
       "object": "chat.completion",
       "model": newBody.model,
       "choices": [
@@ -94,15 +94,15 @@ async function handleRequest(request) {
           "index": 0,
           "message": {
             "role": "assistant",
-            "content": newResposeBody.output.text
+            "content": responseBody.output.text
           },
-          "finish_reason": newResposeBody.output.finish_reason
+          "finish_reason": responseBody.output.finish_reason
         }
       ],
       "usage": {
-        "prompt_tokens": newResposeBody.usage.input_tokens,
-        "completion_tokens": newResposeBody.usage.output_tokens,
-        "total_tokens": newResposeBody.usage.total_tokens
+        "prompt_tokens": responseBody.usage.input_tokens,
+        "completion_tokens": responseBody.usage.output_tokens,
+        "total_tokens": responseBody.usage.total_tokens
       }
 
     }

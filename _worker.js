@@ -11,22 +11,22 @@ export default {
 
 
 async function sendLogToLogflare(logData) {
-    const url = new URL('https://api.logflare.app/logs');
-    url.searchParams.append('source', LOGFLARE_SOURCE_ID);
+  const url = new URL('https://api.logflare.app/logs');
+  url.searchParams.append('source', LOGFLARE_SOURCE_ID);
   
-    let init = {
-      method: 'POST',
-      headers: {
-        'X-API-KEY': LOGFLARE_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        metadata: {'gateway': 'cloudflare', 'app': 'aliyun'},
-        event_message: logData
-      }),
-    };
+  let init = {
+    method: 'POST',
+    headers: {
+      'X-API-KEY': LOGFLARE_API_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      metadata: {'gateway': 'cloudflare', 'app': 'aliyun'},
+      event_message: logData
+    }),
+  };
   
-    await fetch(url, init);
+  await fetch(url, init);
 };
 
 async function handleRequest(request) {
@@ -51,9 +51,9 @@ async function handleRequest(request) {
       redirect: 'follow'
     });
     const response = await fetch(modifiedRequest);
-    let newResposeBody = response.body;
+    // let newResposeBody = response.body;
   
-    const modifiedResponse = new Response(newResposeBody, response);
+    const modifiedResponse = new Response(response.body, response);
     
     modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
     return modifiedResponse;

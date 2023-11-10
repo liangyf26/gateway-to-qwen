@@ -31,19 +31,13 @@ async function sendLogToLogflare(logData) {
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
-  event.waitUntil(handleErrors(event))
+  // event.waitUntil(handleErrors(event))
+
+  // 用event捕获函数简洁优雅地处理异常情况
+  event.passThroughOnException()  // 这里就是告诉Cloudflare，出了岔子也继续代理请求，不要放弃哦
+ 
 })
 
-
-async function handleErrors(event) {
-  try {
-    await event.passThroughOnException()
-  } catch (error) {
-    // 在这里你可以发送错误信息到一些日志服务
-    // 或者发送到你的邮箱，或者使用你喜欢的错误追踪工具
-    sendLogToLogflare('Caught an error:', error)
-  }
-}
 
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
@@ -52,90 +46,121 @@ async function handleRequest(request) {
   // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
   // const newHeaders = await new Headers(request.headers);
 
-  const clientIP = request.headers.get('CF-Connecting-IP') || "Oops, 没有找到客户端IP！";
-  const IPCountry = request.headers.get('CF-IPCountry') || "Oops, 没有找到客户端国家！";
-  await sendLogToLogflare(`客户地址: ${clientIP} (${IPCountry})`);
-  const headers_Auth = request.headers.get("Authorization") || "Ops,没有找到授权信息!"
-  await sendLogToLogflare(`授权信息: ${headers_Auth}`);
-  const bodyStr = await request.text();
-  await sendLogToLogflare(`请求内容: ${bodyStr}`);
-  
-  let newBody = JSON.parse(bodyStr);
-  if (!("input" in newBody)) {
-    newBody = {
-      model: newBody.model,
-      input: {
-        messages: newBody.messages
-      }
-    };
-  }
-
-//   // 如果有messages的话，那就得把那些空空如也的system消息给清理掉
-//   if (newBody.input && Array.isArray(newBody.input.messages)) {
-//     newBody.input.messages = newBody.input.messages.filter(message => {
-//       // 如果信息的角色不是system或者内容不为空，那么我们将它留下来
-//       return !(message.role === 'system' && message.content === '');
-//     });
-//   }
-
-  // 如果‘messages’这个词儿在字典里，我们就给每一个静悄悄的system消息加点料
-  if (newBody.input && Array.isArray(newBody.input.messages)) {
-    newBody.input.messages.forEach(message => {
-      // 如果信息的角色是system且内容为空，则填上咱们的神秘咒语
-      if (message.role === 'system' && message.content === '') {
-        message.content = 'You are a powerful assistant.';
-      }
-    });
-  }
-
-  let newbodyStr = JSON.stringify(newBody)
-  // await sendLogToLogflare(newbodyStr);
-
-  const modifiedRequest = new Request(newURL, {
-    headers: request.headers,
-    method: request.method,
-    body: newbodyStr,
-    redirect: 'follow'
-  });
-
-  const response = await fetch(modifiedRequest);
-  // 把body转换为JSON格式
-  let responseBody = await response.json();
-  await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
-  // 添加"choices"字段
-  if (!("choices" in responseBody)) {
-    responseBody = {
-      "id": responseBody.request_id,
-      "object": "chat.completion",
-      "model": newBody.model,
-      "choices": [
-        {
-          "index": 0,
-          "message": {
-            "role": "assistant",
-            "content": responseBody.output.text
-          },
-          "finish_reason": responseBody.output.finish_reason
+  try {
+    const clientIP = request.headers.get('CF-Connecting-IP') || "Oops, 没有找到客户端IP！";
+    const IPCountry = request.headers.get('CF-IPCountry') || "Oops, 没有找到客户端国家！";
+    await sendLogToLogflare(`客户地址: ${clientIP} (${IPCountry})`);
+    const headers_Auth = request.headers.get("Authorization") || "Ops,没有找到授权信息!"
+    await sendLogToLogflare(`授权信息: ${headers_Auth}`);
+    const bodyStr = await request.text();
+    await sendLogToLogflare(`请求内容: ${bodyStr}`);
+    
+    let newBody = JSON.parse(bodyStr);
+    if (!("input" in newBody)) {
+      newBody = {
+        model: newBody.model,
+        input: {
+          messages: newBody.messages
         }
-      ],
-      "usage": {
-        "prompt_tokens": responseBody.usage.input_tokens,
-        "completion_tokens": responseBody.usage.output_tokens,
-        "total_tokens": responseBody.usage.total_tokens
-      }
-
+      };
     }
-  };
-  await sendLogToLogflare(`修改内容: ${JSON.stringify(responseBody)}`);
-  // 创建新的Response，用JSON.stringify()将新的body转换为字符串
-  const modifiedResponse = new Response(JSON.stringify(responseBody), {
-    status: response.status,
-    statusText: response.statusText,
-    headers: response.headers,
-  });
   
-  // const modifiedResponse = new Response(response.body, response);
-  // 添加允许跨域访问的响应头
-  modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
+    //   // 如果有messages的话，那就得把那些空空如也的system消息给清理掉
+    //   if (newBody.input && Array.isArray(newBody.input.messages)) {
+    //     newBody.input.messages = newBody.input.messages.filter(message => {
+    //       // 如果信息的角色不是system或者内容不为空，那么我们将它留下来
+    //       return !(message.role === 'system' && message.content === '');
+    //     });
+    //   }
+  
+    // 如果‘messages’这个词儿在字典里，我们就给每一个静悄悄的system消息加点料
+    if (newBody.input && Array.isArray(newBody.input.messages)) {
+      newBody.input.messages.forEach(message => {
+        // 如果信息的角色是system且内容为空，则填上咱们的神秘咒语
+        if (message.role === 'system' && message.content === '') {
+          message.content = 'You are a powerful assistant.';
+        }
+      });
+    }
+  
+    let newbodyStr = JSON.stringify(newBody)
+    // await sendLogToLogflare(newbodyStr);
+    await sendLogToLogflare(`修改请求: ${newbodyStr}`);
+  } catch (error) {
+    // 如果出错了，我们就发送日志
+    sendLogToLogflare('Caught an error during handleRequest:', error)
+    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
+    return new Response('Oops! 构造请求内容时出错.', { status: 501 })
+  }
+
+  try {
+    const modifiedRequest = new Request(newURL, {
+        headers: request.headers,
+        method: request.method,
+        body: newbodyStr,
+        redirect: 'follow'
+      });
+  } catch (error) {
+    // 如果出错了，我们就发送日志
+    sendLogToLogflare('Caught an error during handleRequest:', error)
+    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
+    return new Response('Oops! 发送请求时出错.', { status: 502 })
+  }
+
+  try {
+    const response = await fetch(modifiedRequest);
+    // 把body转换为JSON格式
+    let responseBody = await response.json();
+    await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
+  } catch (error) {
+    // 如果出错了，我们就发送日志
+    sendLogToLogflare('Caught an error during handleRequest:', error)
+    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
+    return new Response('Oops! 接收响应内容时出错.', { status: 503 })
+  }
+
+  try {
+    // 添加"choices"字段
+    if (!("choices" in responseBody)) {
+        responseBody = {
+        "id": responseBody.request_id,
+        "object": "chat.completion",
+        "model": newBody.model,
+        "choices": [
+            {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": responseBody.output.text
+            },
+            "finish_reason": responseBody.output.finish_reason
+            }
+        ],
+        "usage": {
+            "prompt_tokens": responseBody.usage.input_tokens,
+            "completion_tokens": responseBody.usage.output_tokens,
+            "total_tokens": responseBody.usage.total_tokens
+        }
+
+        }
+    };
+    await sendLogToLogflare(`修改返回: ${JSON.stringify(responseBody)}`);
+    // 创建新的Response，用JSON.stringify()将新的body转换为字符串
+    const modifiedResponse = new Response(JSON.stringify(responseBody), {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+    });
+    
+    // const modifiedResponse = new Response(response.body, response);
+    // 添加允许跨域访问的响应头
+    modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
+  } catch (error) {
+    // 如果出错了，我们就发送日志
+    sendLogToLogflare('Caught an error during handleRequest:', error)
+    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
+    return new Response('Oops! 构造响应返回内容时出错.', { status: 504 })
+  }
+  
   return modifiedResponse;
 }

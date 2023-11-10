@@ -70,11 +70,21 @@ async function handleRequest(request) {
     };
   }
 
-  // 如果有messages的话，那就得把那些空空如也的system消息给清理掉
+//   // 如果有messages的话，那就得把那些空空如也的system消息给清理掉
+//   if (newBody.input && Array.isArray(newBody.input.messages)) {
+//     newBody.input.messages = newBody.input.messages.filter(message => {
+//       // 如果信息的角色不是system或者内容不为空，那么我们将它留下来
+//       return !(message.role === 'system' && message.content === '');
+//     });
+//   }
+
+  // 如果‘messages’这个词儿在字典里，我们就给每一个静悄悄的system消息加点料
   if (newBody.input && Array.isArray(newBody.input.messages)) {
-    newBody.input.messages = newBody.input.messages.filter(message => {
-      // 如果信息的角色不是system或者内容不为空，那么我们将它留下来
-      return !(message.role === 'system' && message.content === '');
+    newBody.input.messages.forEach(message => {
+      // 如果信息的角色是system且内容为空，则填上咱们的神秘咒语
+      if (message.role === 'system' && message.content === '') {
+        message.content = 'You are a powerful assistant.';
+      }
     });
   }
 

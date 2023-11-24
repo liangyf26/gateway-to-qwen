@@ -71,11 +71,10 @@ async function handleRequest(request) {
       });
     }
   
-    let newbodyStr = JSON.stringify(newBody)
-    // await sendLogToLogflare(newbodyStr);
+    var newbodyStr = JSON.stringify(newBody)
     await sendLogToLogflare(`修改请求: ${newbodyStr}`);
   } catch (error) {
-    await sendLogToLogflare('Caught an error during buildRequest:', error)
+    await sendLogToLogflare('BuildRequest:'+ error.message + '; Stack Trace: ' + error.stack)
     return new Response('Oops! 构造请求内容时出错.', { status: 501 })
   }
 
@@ -87,9 +86,8 @@ async function handleRequest(request) {
         redirect: 'follow'
       });
   } catch (error) {
-    // sendLogToLogflare('SendRequest:' + error.message + '; Stack Trace: ' + error.stack)
-    await sendLogToLogflare(error.message)
-    return new Response('Oops! 发送请求时出错啦~', { status: 502 })
+    await sendLogToLogflare('SendRequest:' + error.message + '; Stack Trace: ' + error.stack)
+    return new Response('Oops! 发送请求时出错啦~~', { status: 502 })
   }
 
   try {
@@ -98,7 +96,7 @@ async function handleRequest(request) {
     let responseBody = await response.json();
     await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
   } catch (error) {
-    sendLogToLogflare('Caught an error during handleRequest:', error)
+    await sendLogToLogflare('handleRequest:'+ error.message + '; Stack Trace: ' + error.stack)
     return new Response('Oops! 接收响应内容时出错.', { status: 503 })
   }
 
@@ -139,7 +137,7 @@ async function handleRequest(request) {
     // 添加允许跨域访问的响应头
     modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   } catch (error) {
-    sendLogToLogflare('Caught an error during handleRequest:', error)
+    await sendLogToLogflare('SendResponse:'+ error.message + '; Stack Trace: ' + error.stack)
     return new Response('Oops! 构造响应返回内容时出错.', { status: 504 })
   }
   

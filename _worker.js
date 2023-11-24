@@ -91,7 +91,7 @@ async function handleRequest(request) {
   }
 
   try {
-    const response = await fetch(modifiedRequest);
+    var response = await fetch(modifiedRequest);
     // 把body转换为JSON格式
     var responseBody = await response.json();
     await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
@@ -127,7 +127,7 @@ async function handleRequest(request) {
     };
     await sendLogToLogflare(`修改返回: ${JSON.stringify(responseBody)}`);
     // 创建新的Response，用JSON.stringify()将新的body转换为字符串
-    const modifiedResponse = new Response(JSON.stringify(responseBody), {
+    var modifiedResponse = new Response(JSON.stringify(responseBody), {
         status: response.status,
         statusText: response.statusText,
         headers: response.headers,

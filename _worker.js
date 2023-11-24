@@ -1,6 +1,6 @@
 const TELEGRAPH_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation';
-let LOGFLARE_API_KEY = 'OX9_n1kPX8_p';
-let LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';
+var LOGFLARE_API_KEY = 'OX9_n1kPX8_p';
+var LOGFLARE_SOURCE_ID = 'fd15aaf1-8dec-4c6a-bd44-56e57b0c93e2';
 
 export default {
   async fetch(request, env) {
@@ -14,7 +14,7 @@ async function sendLogToLogflare(logData) {
   const url = new URL('https://api.logflare.app/logs');
   url.searchParams.append('source', LOGFLARE_SOURCE_ID);
 
-  let init = {
+  var init = {
     method: 'POST',
     headers: {
       'X-API-KEY': LOGFLARE_API_KEY,
@@ -51,7 +51,7 @@ async function handleRequest(request) {
     const bodyStr = await request.text();
     await sendLogToLogflare(`请求内容: ${bodyStr}`);
     
-    let newBody = JSON.parse(bodyStr);
+    var newBody = JSON.parse(bodyStr);
     if (!("input" in newBody)) {
       newBody = {
         model: newBody.model,
@@ -93,7 +93,7 @@ async function handleRequest(request) {
   try {
     const response = await fetch(modifiedRequest);
     // 把body转换为JSON格式
-    let responseBody = await response.json();
+    var responseBody = await response.json();
     await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
   } catch (error) {
     await sendLogToLogflare('handleRequest:'+ error.message + '; Stack Trace: ' + error.stack)

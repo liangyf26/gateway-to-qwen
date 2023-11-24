@@ -97,7 +97,7 @@ async function handleRequest(request) {
     await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
   } catch (error) {
     await sendLogToLogflare('handleRequest:'+ error.message + '; Stack Trace: ' + error.stack)
-    return new Response('Oops! 接收响应内容时出错.', { status: 503 })
+    return new Response('Oops! 接收响应内容时出错...', { status: 503 })
   }
 
   try {

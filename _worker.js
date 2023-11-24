@@ -87,8 +87,8 @@ async function handleRequest(request) {
         redirect: 'follow'
       });
   } catch (error) {
-    sendLogToLogflare('Caught an error during SendRequest:' + error)
-    return new Response('Oops! 发送请求时出错....', { status: 502 })
+    sendLogToLogflare('SendRequest:' + error.message + '; Stack Trace: ' + error.stack)
+    return new Response('Oops! 发送请求时出错啦~', { status: 502 })
   }
 
   try {

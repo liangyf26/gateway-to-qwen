@@ -31,7 +31,6 @@ async function sendLogToLogflare(logData) {
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
-  // event.waitUntil(handleErrors(event))
 
   // 用event捕获函数简洁优雅地处理异常情况
   event.passThroughOnException()  // 这里就是告诉Cloudflare，出了岔子也继续代理请求，不要放弃哦
@@ -42,9 +41,6 @@ addEventListener('fetch', event => {
 async function handleRequest(request) {
   const headers_Origin = request.headers.get("Access-Control-Allow-Origin") || "*"
   const newURL = TELEGRAPH_URL;
-
-  // 创建一个新的 Headers 对象复制原来的 headers，然后添加你的 Authorization
-  // const newHeaders = await new Headers(request.headers);
 
   try {
     const clientIP = request.headers.get('CF-Connecting-IP') || "Oops, 没有找到客户端IP！";
@@ -65,15 +61,7 @@ async function handleRequest(request) {
       };
     }
   
-    //   // 如果有messages的话，那就得把那些空空如也的system消息给清理掉
-    //   if (newBody.input && Array.isArray(newBody.input.messages)) {
-    //     newBody.input.messages = newBody.input.messages.filter(message => {
-    //       // 如果信息的角色不是system或者内容不为空，那么我们将它留下来
-    //       return !(message.role === 'system' && message.content === '');
-    //     });
-    //   }
-  
-    // 如果‘messages’这个词儿在字典里，我们就给每一个静悄悄的system消息加点料
+ 
     if (newBody.input && Array.isArray(newBody.input.messages)) {
       newBody.input.messages.forEach(message => {
         // 如果信息的角色是system且内容为空，则填上咱们的神秘咒语
@@ -87,9 +75,7 @@ async function handleRequest(request) {
     // await sendLogToLogflare(newbodyStr);
     await sendLogToLogflare(`修改请求: ${newbodyStr}`);
   } catch (error) {
-    // 如果出错了，我们就发送日志
     sendLogToLogflare('Caught an error during buildRequest:', error)
-    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
     return new Response('Oops! 构造请求内容时出错.', { status: 501 })
   }
 
@@ -101,9 +87,7 @@ async function handleRequest(request) {
         redirect: 'follow'
       });
   } catch (error) {
-    // 如果出错了，我们就发送日志
-    sendLogToLogflare('Caught an error during SendRequest:', error)
-    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
+    sendLogToLogflare('Caught an error during SendRequest:' + error)
     return new Response('Oops! 发送请求时出错....', { status: 502 })
   }
 
@@ -113,9 +97,7 @@ async function handleRequest(request) {
     let responseBody = await response.json();
     await sendLogToLogflare(`返回内容: ${JSON.stringify(responseBody)}`);
   } catch (error) {
-    // 如果出错了，我们就发送日志
     sendLogToLogflare('Caught an error during handleRequest:', error)
-    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
     return new Response('Oops! 接收响应内容时出错.', { status: 503 })
   }
 
@@ -156,9 +138,7 @@ async function handleRequest(request) {
     // 添加允许跨域访问的响应头
     modifiedResponse.headers.set('Access-Control-Allow-Origin', headers_Origin);
   } catch (error) {
-    // 如果出错了，我们就发送日志
     sendLogToLogflare('Caught an error during handleRequest:', error)
-    // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
     return new Response('Oops! 构造响应返回内容时出错.', { status: 504 })
   }
   

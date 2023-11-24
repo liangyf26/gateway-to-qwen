@@ -75,7 +75,7 @@ async function handleRequest(request) {
     // await sendLogToLogflare(newbodyStr);
     await sendLogToLogflare(`修改请求: ${newbodyStr}`);
   } catch (error) {
-    sendLogToLogflare('Caught an error during buildRequest:', error)
+    await sendLogToLogflare('Caught an error during buildRequest:', error)
     return new Response('Oops! 构造请求内容时出错.', { status: 501 })
   }
 
@@ -87,7 +87,8 @@ async function handleRequest(request) {
         redirect: 'follow'
       });
   } catch (error) {
-    sendLogToLogflare('SendRequest:' + error.message + '; Stack Trace: ' + error.stack)
+    // sendLogToLogflare('SendRequest:' + error.message + '; Stack Trace: ' + error.stack)
+    await sendLogToLogflare(error.message)
     return new Response('Oops! 发送请求时出错啦~', { status: 502 })
   }
 

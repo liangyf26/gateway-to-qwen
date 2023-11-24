@@ -79,7 +79,7 @@ async function handleRequest(request) {
   }
 
   try {
-    const modifiedRequest = new Request(newURL, {
+    var modifiedRequest = new Request(newURL, {
         headers: request.headers,
         method: request.method,
         body: newbodyStr,

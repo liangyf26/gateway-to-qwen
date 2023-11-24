@@ -78,7 +78,7 @@ async function handleRequest(request) {
       newBody.input.messages.forEach(message => {
         // 如果信息的角色是system且内容为空，则填上咱们的神秘咒语
         if (message.role === 'system' && message.content === '') {
-          message.content = 'You are a powerful assistant.';
+          message.content = 'You are a helpful assistant.';
         }
       });
     }
@@ -88,7 +88,7 @@ async function handleRequest(request) {
     await sendLogToLogflare(`修改请求: ${newbodyStr}`);
   } catch (error) {
     // 如果出错了，我们就发送日志
-    sendLogToLogflare('Caught an error during handleRequest:', error)
+    sendLogToLogflare('Caught an error during buildRequest:', error)
     // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
     return new Response('Oops! 构造请求内容时出错.', { status: 501 })
   }
@@ -102,9 +102,9 @@ async function handleRequest(request) {
       });
   } catch (error) {
     // 如果出错了，我们就发送日志
-    sendLogToLogflare('Caught an error during handleRequest:', error)
+    sendLogToLogflare('Caught an error during SendRequest:', error)
     // 然后告诉客户端，咱们这儿小有波折，请稍后再来看看
-    return new Response('Oops! 发送请求时出错.', { status: 502 })
+    return new Response('Oops! 发送请求时出错....', { status: 502 })
   }
 
   try {
